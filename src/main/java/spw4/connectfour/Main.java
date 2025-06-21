@@ -15,17 +15,39 @@ public class Main {
             input = scanner.nextLine();
 
             switch (input) {
-                case "1": connectFour.drop(1);                   break;
-                case "2": connectFour.drop(2);                   break;
-                case "3": connectFour.drop(3);                   break;
-                case "4": connectFour.drop(4);                   break;
-                case "5": connectFour.drop(5);                   break;
-                case "6": connectFour.drop(6);                   break;
-                case "7": connectFour.drop(7);                   break;
-                case "r": connectFour.reset(Player.red);         break;
-                case "q": System.out.println("Ok, bye.");        return;
-                case "h": printHelp();                           break;
-                default:  System.out.println("Unknown command"); break;
+                case "1":
+                    connectFour.drop(1);
+                    break;
+                case "2":
+                    connectFour.drop(2);
+                    break;
+                case "3":
+                    connectFour.drop(3);
+                    break;
+                case "4":
+                    connectFour.drop(4);
+                    break;
+                case "5":
+                    connectFour.drop(5);
+                    break;
+                case "6":
+                    connectFour.drop(6);
+                    break;
+                case "7":
+                    connectFour.drop(7);
+                    break;
+                case "r":
+                    connectFour.reset(Player.red);
+                    break;
+                case "q":
+                    System.out.println("Ok, bye.");
+                    return;
+                case "h":
+                    printHelp();
+                    break;
+                default:
+                    System.out.println("Unknown command");
+                    break;
             }
             System.out.println(connectFour);
         }
