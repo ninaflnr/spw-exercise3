@@ -1,0 +1,115 @@
+name: Connect Four Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  MAVEN_OPTS: "-Dmaven.repo.local=./.m2/repository"
+  SONAR_HOST_URL: "http://sonarqube:9000"
+  SONAR_TOKEN: "sqa_f8596ae9c344d01536b73ba1c56a082de51cb709"
+  SONAR_PROJECT_KEY: "ConnectFour"
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: mvn compile
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: target
+          path: target/
+          retention-days: 7
+
+  test:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+          path: target/
+      - name: Test
+        run: mvn test
+
+  analyze:
+    runs-on: self-hosted
+    needs: [build, test]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+          path: target/
+      - name: SonarQube analysis
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.exclusions="**/*.css,**/*.css.map,**/*.js,**/*.js.map"
+      - name: Upload analyze artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: analyze-reports
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+          retention-days: 7
+
+  package:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: target
+          path: target/
+      - name: Package
+        run: mvn package
+      - name: Upload WAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: war
+          path: target/*.war
+
+  deploy_test:
+    runs-on: self-hosted
+    needs: package
+    environment:
+      name: test
+      url: http://localhost:8081/ConnectFour
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download WAR
+        uses: actions/download-artifact@v4
+        with:
+          name: war
+          path: target/
+      - name: Deploy to test environment
+        run: |
+          sudo cp target/*.war /usr/local/tomcat/webapps/
+
+  stop_test:
+    runs-on: self-hosted
+    needs: deploy_test
+    environment:
+      name: test
+    steps:
+      - name: Stop test environment
+        run: |
+          sudo rm -f /usr/local/tomcat/webapps/ConnectFour.war
+          sudo rm -rf /usr/local/tomcat/webapps/ConnectFour/
