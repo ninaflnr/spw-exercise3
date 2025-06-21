@@ -2,7 +2,8 @@ package spw4.connectfour;
 
 import java.security.InvalidParameterException;
 
-public class ConnectFourImpl implements ConnectFour {    private final int ROWS = 6;
+public class ConnectFourImpl implements ConnectFour {
+    private final int ROWS = 6;
     private final int COLS = 7;
     private final char PLACEHOLDER = '.';
     private char[][] board;
@@ -14,7 +15,9 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
         if (playerOnTurn == null || playerOnTurn == Player.none) throw new InvalidParameterException();
         currentPlayer = playerOnTurn;
         initBoard();
-    }    private void initBoard() {
+    }
+
+    private void initBoard() {
         gameOver = false;
         winner = Player.none;
         board = new char[ROWS][COLS];
@@ -23,7 +26,9 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
                 board[i][j] = PLACEHOLDER;
             }
         }
-    }    public Player getPlayerAt(int row, int col) {
+    }
+
+    public Player getPlayerAt(int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             throw new InvalidParameterException();
         }
@@ -53,7 +58,8 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();        for (int row = 0; row < ROWS; row++) {
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < ROWS; row++) {
             sb.append("|");
             for (int col = 0; col < COLS; col++) {
                 char cellValue = board[row][col];
@@ -63,11 +69,15 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
         }
 
         return sb.toString();
-    }    public void reset(Player playerOnTurn) {
+    }
+
+    public void reset(Player playerOnTurn) {
         if (playerOnTurn == null || playerOnTurn == Player.none) throw new InvalidParameterException();
         currentPlayer = playerOnTurn;
         initBoard();
-    }    public void drop(int col) {
+    }
+
+    public void drop(int col) {
         if (col < 0 || col >= COLS) throw new InvalidParameterException();
         int row = lookupRow(col);
         if (row == -1) throw new RuntimeException();
@@ -96,7 +106,8 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
                 {1, 0},
                 {1, 1},
                 {1, -1}
-        };        for (int row = 0; row < ROWS; row++) {
+        };
+        for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 char currentCell = board[row][col];
 
@@ -120,7 +131,8 @@ public class ConnectFourImpl implements ConnectFour {    private final int ROWS 
 
         if (endRow < 0 || endRow >= ROWS || endCol < 0 || endCol >= COLS) {
             return false;
-        }        for (int i = 1; i < 4; i++) {
+        }
+        for (int i = 1; i < 4; i++) {
             int checkRow = startRow + i * deltaRow;
             int checkCol = startCol + i * deltaCol;
 
