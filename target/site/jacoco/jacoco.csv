@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+ConnectFour Web Application,spw4.connectfour,Player,0,21,0,0,0,4,0,1,0,1
+ConnectFour Web Application,spw4.connectfour,Main,104,0,13,0,30,0,14,0,3,0
+ConnectFour Web Application,spw4.connectfour,ConnectFourServlet,809,0,31,0,153,0,24,0,5,0
+ConnectFour Web Application,spw4.connectfour,ConnectFourImpl,0,391,1,65,0,75,1,44,0,12

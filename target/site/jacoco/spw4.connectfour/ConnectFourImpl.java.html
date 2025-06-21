@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConnectFourImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ConnectFour Web Application</a> &gt; <a href="index.source.html" class="el_package">spw4.connectfour</a> &gt; <span class="el_source">ConnectFourImpl.java</span></div><h1>ConnectFourImpl.java</h1><pre class="source lang-java linenums">package spw4.connectfour;
+
+import java.security.InvalidParameterException;
+
+<span class="fc" id="L5">public class ConnectFourImpl implements ConnectFour {    private final int ROWS = 6;</span>
+<span class="fc" id="L6">    private final int COLS = 7;</span>
+<span class="fc" id="L7">    private final char PLACEHOLDER = '.';</span>
+    private char[][] board;
+    private Player currentPlayer;
+    private boolean gameOver;
+    private Player winner;
+
+<span class="fc" id="L13">    public ConnectFourImpl(Player playerOnTurn) {</span>
+<span class="fc bfc" id="L14" title="All 4 branches covered.">        if (playerOnTurn == null || playerOnTurn == Player.none) throw new InvalidParameterException();</span>
+<span class="fc" id="L15">        currentPlayer = playerOnTurn;</span>
+<span class="fc" id="L16">        initBoard();</span>
+<span class="fc" id="L17">    }    private void initBoard() {</span>
+<span class="fc" id="L18">        gameOver = false;</span>
+<span class="fc" id="L19">        winner = Player.none;</span>
+<span class="fc" id="L20">        board = new char[ROWS][COLS];</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        for (int i = 0; i &lt; ROWS; ++i) {</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">            for (int j = 0; j &lt; COLS; ++j) {</span>
+<span class="fc" id="L23">                board[i][j] = PLACEHOLDER;</span>
+            }
+        }
+<span class="fc" id="L26">    }    public Player getPlayerAt(int row, int col) {</span>
+<span class="fc bfc" id="L27" title="All 8 branches covered.">        if (row &lt; 0 || row &gt;= ROWS || col &lt; 0 || col &gt;= COLS) {</span>
+<span class="fc" id="L28">            throw new InvalidParameterException();</span>
+        }
+
+<span class="fc" id="L31">        char cellValue = board[row][col];</span>
+
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (cellValue == 'R') {</span>
+<span class="fc" id="L34">            return Player.red;</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        } else if (cellValue == 'Y') {</span>
+<span class="fc" id="L36">            return Player.yellow;</span>
+        } else {
+<span class="fc" id="L38">            return Player.none;</span>
+        }
+    }
+
+    public Player getPlayerOnTurn() {
+<span class="fc" id="L43">        return currentPlayer;</span>
+    }
+
+    public boolean isGameOver() {
+<span class="fc" id="L47">        return gameOver;</span>
+    }
+
+    public Player getWinner() {
+<span class="fc" id="L51">        return winner;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        StringBuilder sb = new StringBuilder();        for (int row = 0; row &lt; ROWS; row++) {</span>
+<span class="fc" id="L57">            sb.append(&quot;|&quot;);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int col = 0; col &lt; COLS; col++) {</span>
+<span class="fc" id="L59">                char cellValue = board[row][col];</span>
+<span class="fc" id="L60">                sb.append(&quot; &quot;).append(cellValue).append(&quot; &quot;);</span>
+            }
+<span class="fc" id="L62">            sb.append(&quot;|\n&quot;);</span>
+        }
+
+<span class="fc" id="L65">        return sb.toString();</span>
+    }    public void reset(Player playerOnTurn) {
+<span class="fc bfc" id="L67" title="All 4 branches covered.">        if (playerOnTurn == null || playerOnTurn == Player.none) throw new InvalidParameterException();</span>
+<span class="fc" id="L68">        currentPlayer = playerOnTurn;</span>
+<span class="fc" id="L69">        initBoard();</span>
+<span class="fc" id="L70">    }    public void drop(int col) {</span>
+<span class="fc bfc" id="L71" title="All 4 branches covered.">        if (col &lt; 0 || col &gt;= COLS) throw new InvalidParameterException();</span>
+<span class="fc" id="L72">        int row = lookupRow(col);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (row == -1) throw new RuntimeException();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        board[row][col] = getPlayerOnTurn() == Player.red ? 'R' : 'Y';</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (hasFourConnected()) {</span>
+<span class="fc" id="L77">            this.gameOver = true;</span>
+<span class="fc" id="L78">            this.winner = this.currentPlayer;</span>
+<span class="fc" id="L79">        } else {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            this.currentPlayer = this.currentPlayer == Player.red ? Player.yellow : Player.red;</span>
+        }
+<span class="fc" id="L82">    }</span>
+
+    private int lookupRow(int col) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (int row = ROWS - 1; row &gt;= 0; row--) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (board[row][col] == PLACEHOLDER) {</span>
+<span class="fc" id="L87">                return row;</span>
+            }
+        }
+<span class="fc" id="L90">        return -1;</span>
+    }
+
+    private boolean hasFourConnected() {
+<span class="fc" id="L94">        int[][] directions = {</span>
+<span class="fc" id="L95">                {0, 1},</span>
+<span class="fc" id="L96">                {1, 0},</span>
+<span class="fc" id="L97">                {1, 1},</span>
+<span class="fc" id="L98">                {1, -1}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        };        for (int row = 0; row &lt; ROWS; row++) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            for (int col = 0; col &lt; COLS; col++) {</span>
+<span class="fc" id="L101">                char currentCell = board[row][col];</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">                if (currentCell == PLACEHOLDER) {</span>
+<span class="fc" id="L104">                    continue;</span>
+                }
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                for (int[] direction : directions) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                    if (checkDirection(row, col, direction[0], direction[1], currentCell)) {</span>
+<span class="fc" id="L109">                        return true;</span>
+                    }
+                }
+            }
+        }
+<span class="fc" id="L114">        return false;</span>
+    }
+
+    private boolean checkDirection(int startRow, int startCol, int deltaRow, int deltaCol, char player) {
+<span class="fc" id="L118">        int endRow = startRow + 3 * deltaRow;</span>
+<span class="fc" id="L119">        int endCol = startCol + 3 * deltaCol;</span>
+
+<span class="pc bpc" id="L121" title="1 of 8 branches missed.">        if (endRow &lt; 0 || endRow &gt;= ROWS || endCol &lt; 0 || endCol &gt;= COLS) {</span>
+<span class="fc" id="L122">            return false;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        }        for (int i = 1; i &lt; 4; i++) {</span>
+<span class="fc" id="L124">            int checkRow = startRow + i * deltaRow;</span>
+<span class="fc" id="L125">            int checkCol = startCol + i * deltaCol;</span>
+
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            if (board[checkRow][checkCol] != player) {</span>
+<span class="fc" id="L128">                return false;</span>
+            }
+        }
+
+<span class="fc" id="L132">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
